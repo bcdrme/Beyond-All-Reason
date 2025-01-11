@@ -35,7 +35,9 @@ local oldCreateContext = RmlUi.CreateContext
 
 local function NewCreateContext(name)
 	local context = oldCreateContext(name)
-	context.dp_ratio = Spring.GetConfigFloat("ui_scale", 1)
+	local vsx, vsy = Spring.GetViewGeometry()
+	local scale = (vsy / 1440) * Spring.GetConfigFloat("ui_scale", 1)
+	context.dp_ratio = scale
 	return context
 end
 
