@@ -205,7 +205,7 @@ local function GetUnitFinalPosition(uID)
 						local pID = params[1]
 						local px, py, pz
 
-						if pID > maxUnits then
+						if pID >= maxUnits then
 							px, py, pz = spGetFeaturePosition(pID - maxUnits)
 						else
 							px, py, pz = spGetUnitPosition(pID)
@@ -736,6 +736,7 @@ end
 
 local function DrawFormationDots(vertFunction, zoomY)
 	gl.PushAttrib(GL.ALL_ATTRIB_BITS)
+    gl.DepthTest(false)
     local currentLength = 0
     local lengthPerUnit = lineLength / (selectedUnitsCount - 1)
     local lengthUnitNext = lengthPerUnit
@@ -769,6 +770,7 @@ local function DrawFormationDots(vertFunction, zoomY)
         end
         DrawFilledCircleOutFading(fNodes[#fNodes], dotSize)
     end
+    gl.DepthTest(true)
 	gl.PopAttrib(GL.ALL_ATTRIB_BITS)
 end
 

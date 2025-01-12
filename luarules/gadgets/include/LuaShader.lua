@@ -184,9 +184,9 @@ mat4 mat4mix(mat4 a, mat4 b, float alpha) {
 // Additional helper functions useful in Spring
 
 vec2 heightmapUVatWorldPos(vec2 worldpos){
-	const vec2 inverseMapSize = 1.0 / mapSize.xy;
+	vec2 inverseMapSize = vec2(1.0) / mapSize.xy;
 	// Some texel magic to make the heightmap tex perfectly align:
-	const vec2 heightmaptexel = vec2(8.0, 8.0);
+	vec2 heightmaptexel = vec2(8.0, 8.0);
 	worldpos +=  vec2(-8.0, -8.0) * (worldpos * inverseMapSize) + vec2(4.0, 4.0) ;
 	vec2 uvhm = clamp(worldpos, heightmaptexel, mapSize.xy - heightmaptexel);
 	uvhm = uvhm	* inverseMapSize;
@@ -195,9 +195,9 @@ vec2 heightmapUVatWorldPos(vec2 worldpos){
 
 // This does 'mirror' style tiling of UVs like the way the map edge extension works
 vec2 heightmapUVatWorldPosMirrored(vec2 worldpos) {
-	const vec2 inverseMapSize = 1.0 / mapSize.xy;
+	vec2 inverseMapSize = vec2(1.0) / mapSize.xy;
 	// Some texel magic to make the heightmap tex perfectly align:
-	const vec2 heightmaptexel = vec2(8.0, 8.0);
+	vec2 heightmaptexel = vec2(8.0, 8.0);
 	worldpos +=  vec2(-8.0, -8.0) * (worldpos * inverseMapSize) + vec2(4.0, 4.0) ;
 	vec2 uvhm = worldpos * inverseMapSize;
 	
@@ -236,9 +236,7 @@ vec3 rgb2hsv(vec3 c){
 	local waterAbsorbColorR, waterAbsorbColorG, waterAbsorbColorB = gl.GetWaterRendering("absorb")
 	local waterMinColorR, waterMinColorG, waterMinColorB = gl.GetWaterRendering("minColor")
 	local waterBaseColorR, waterBaseColorG, waterBaseColorB = gl.GetWaterRendering("baseColor")
-	
-	--Spring.Echo(waterAbsorbColorR, waterAbsorbColorG, waterAbsorbColorB)
-	--Spring.Debug.TableEcho(waterAbsorbColor)
+
 	local waterUniforms = 
 [[ 
 #define WATERABSORBCOLOR vec3(%f,%f,%f)

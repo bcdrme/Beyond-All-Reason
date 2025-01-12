@@ -32,9 +32,9 @@ end
 local removeCritters		= true		-- gradually remove critters when unitcont gets higher
 local addCrittersAgain		= true		-- re-add the removed critters again
 
-local minTotalUnits			= 1000					-- starting removing critters at this total unit count
-local maxTotalunits			= 2300				-- finished removing critters at this total unit count
-local minimumCritters		= 0.08					-- dont remove further than (0.1 == 10%) of critters
+local minTotalUnits			= 3000					-- starting removing critters at this total unit count
+local maxTotalunits			= 6000				-- finished removing critters at this total unit count
+local minimumCritters		= 0.2					-- dont remove further than (0.1 == 10%) of critters
 local minCritters				= math.ceil((Game.mapSizeX*Game.mapSizeZ)/6000000)				-- dont remove below this amount
 local companionRadiusStart		= 140					-- if mapcritter is spawned this close it will be converted to companion critter
 local companionRadiusAfterStart = 13
@@ -69,6 +69,8 @@ local aliveCritters = 0
 local companionRadius = companionRadiusStart
 local processOrders = true
 local addedInitialCritters
+
+local ownCritterDestroy = false
 
 local function randomPatrolInBox(unitID, box, minWaterDepth)	-- only define minWaterDepth if unit is a submarine
 	local ux,_,uz = GetUnitPosition(unitID,true,true)
@@ -181,21 +183,19 @@ local function randomPatrolInCircle(unitID, circle, minWaterDepth)	-- only defin
 end
 
 local function setGaiaUnitSpecifics(unitID)
-	if Spring.GetModOptions().april1extra ~= true then
-		Spring.SetUnitNeutral(unitID, true)
-		Spring.SetUnitNoSelect(unitID, true)
-		Spring.SetUnitStealth(unitID, true)
-		Spring.SetUnitNoMinimap(unitID, true)
-		Spring.SetUnitMaxHealth(unitID, 2)
-		Spring.SetUnitBlocking(unitID, false)
-		Spring.SetUnitSensorRadius(unitID, 'los', 0)
-		Spring.SetUnitSensorRadius(unitID, 'airLos', 0)
-		Spring.SetUnitSensorRadius(unitID, 'radar', 0)
-		Spring.SetUnitSensorRadius(unitID, 'sonar', 0)
-		for weaponID, _ in pairs(UnitDefs[GetUnitDefID(unitID)].weapons) do
-			Spring.GiveOrderToUnit(unitID, CMD.FIRE_STATE, {0}, 0)
-			--Spring.UnitWeaponHoldFire(unitID, weaponID)		-- doesnt seem to work :S (maybe because they still patrol)
-		end
+	Spring.SetUnitNeutral(unitID, true)
+	Spring.SetUnitNoSelect(unitID, true)
+	Spring.SetUnitStealth(unitID, true)
+	Spring.SetUnitNoMinimap(unitID, true)
+	Spring.SetUnitMaxHealth(unitID, 2)
+	Spring.SetUnitBlocking(unitID, false)
+	Spring.SetUnitSensorRadius(unitID, 'los', 0)
+	Spring.SetUnitSensorRadius(unitID, 'airLos', 0)
+	Spring.SetUnitSensorRadius(unitID, 'radar', 0)
+	Spring.SetUnitSensorRadius(unitID, 'sonar', 0)
+	for weaponID, _ in pairs(UnitDefs[GetUnitDefID(unitID)].weapons) do
+		Spring.GiveOrderToUnit(unitID, CMD.FIRE_STATE, {0}, 0)
+		--Spring.UnitWeaponHoldFire(unitID, weaponID)		-- doesnt seem to work :S (maybe because they still patrol)
 	end
 end
 
@@ -210,6 +210,7 @@ end
 local mapConfig
 
 function gadget:Initialize()
+	gadgetHandler:RegisterAllowCommand(CMD.ATTACK)
 	local allUnits = Spring.GetAllUnits()
 	for _, unitID in pairs(allUnits) do
 		local unitDefID = GetUnitDefID(unitID)
@@ -221,7 +222,7 @@ function gadget:Initialize()
 
 	local mapname = Game.mapName:lower()
 	for name, config in pairs(critterConfig) do
-		if string.find(mapname, name) then
+		if string.find(mapname, name, 1, true) then
 			mapConfig = config
 			break
 		end
@@ -276,6 +277,7 @@ local function adjustCritters(newAliveCritters)
 
 	local removeKeys = {}
 	local removeKeysCount = 0
+	ownCritterDestroy = true -- flag to skip UnitDestroyed callin
 	for unitID, critter in pairs(critterUnits) do
 		if add and not critter.alive  or  not add and critter.alive then
 			if add then
@@ -300,6 +302,7 @@ local function adjustCritters(newAliveCritters)
 			if critterDifference > -1 and critterDifference < 1  then break end
 		end
 	end
+	ownCritterDestroy = false
 	if add then
 		for i, unitID in ipairs(removeKeys) do
 			critterUnits[unitID] = nil		-- this however leaves these keys still being iterated
@@ -571,7 +574,7 @@ end
 
 function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDefID, attackerTeamID)
 	commanders[unitID] = nil
-	if critterUnits[unitID] ~= nil and attackerID ~= nil then
+	if not ownCritterDestroy and critterUnits[unitID] and critterUnits[unitID].alive then
 		critterUnits[unitID] = nil
 		totalCritters = totalCritters - 1
 	end
@@ -579,11 +582,11 @@ end
 
 --http://springrts.com/phpbb/viewtopic.php?f=23&t=30109
 function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, playerID, fromSynced, fromLua)
-	if cmdID and cmdID == CMD.ATTACK then
-		if cmdParams and #cmdParams == 1 then
-			if critterUnits[cmdParams[1]] ~= nil then
-				return false
-			end
+	-- accepts: CMD.ATTACK
+	if cmdParams and #cmdParams == 1 then
+		local critter = critterUnits[cmdParams[1]]
+		if critter and critter.alive then
+			return false
 		end
 	end
 	return true

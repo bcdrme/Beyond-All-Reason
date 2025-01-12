@@ -8,7 +8,8 @@ function widget:GetInfo()
 		date      = "2021.04.26",
 		license   = "Lua: GPLv2, GLSL: (c) Beherith (mysterme@gmail.com)",
 		layer     = -100,
-		enabled   = false
+		enabled   = false,
+		depends   = {'gl4'},
 	}
 end
 
@@ -252,8 +253,15 @@ local function initUnitList()
 		['armantiship'] = { weapons = { 3 } },
 		['corantiship'] = { weapons = { 3 } },
 
+		-- LEGION
+		['legabm'] = { weapons = { 3 } }, --antinuke
+		['legrampart'] = { weapons = { 3 } }, --rampart
+
 		-- SCAVENGERS
-		['scavengerdroppodbeacon_scav'] = { weapons = { 1 } },
+		['scavbeacon_t1_scav'] = { weapons = { 1 } },
+		['scavbeacon_t2_scav'] = { weapons = { 1 } },
+		['scavbeacon_t3_scav'] = { weapons = { 1 } },
+		['scavbeacon_t4_scav'] = { weapons = { 1 } },
 
 		['armannit3'] = { weapons = { 1 } },
 		['armminivulc'] = { weapons = { 1 } },

@@ -1,7 +1,7 @@
 
 local voidWater = false
 local waterLevel = Spring.GetModOptions().map_waterlevel
-local waterIsLava = Spring.GetModOptions().map_waterislava
+local waterIsLava = Spring.Lava.isLavaMap
 local minHeight, _, _, _ = Spring.GetGroundExtremes()
 local success, mapinfo = pcall(VFS.Include,"mapinfo.lua") -- load mapinfo.lua confs
 if success and mapinfo then
@@ -21,6 +21,8 @@ function widget:GetInfo()
 end
 
 local isPregame = Spring.GetGameFrame() == 0 and not isSpec
+
+local uDefNames = UnitDefNames
 
 local GetActiveCommand		= Spring.GetActiveCommand
 local SetActiveCommand		= Spring.SetActiveCommand
@@ -81,6 +83,37 @@ local unitlist = {
 	{'corllt', 'corptl'},
 }
 
+
+
+local legionUnitlist = {
+	--{'cormakr','legfmkr'},
+	--{'cordrag','corfdrag'},
+	--{'cormstor', 'coruwms'},
+	--{'corestor', 'coruwes'},
+	--{'legrl','corfrt'},--
+	{'leghp','legfhp'},
+	--{'legrad','corfrad'},--asym pairs cannot overlap with core placeholders
+	--{'legmg','corfhlt'},--
+	--{'cortarg','corfatf'},
+	--{'cormmkr','coruwmmm'},
+	--{'corfus','coruwfus'},
+	--{'corflak','corenaa'},
+	--{'cormoho','coruwmme'},--does this combo actually manifest on anything...?
+	{'legsolar','legtide'},
+	--{'leglab','corsy'},--soon(tm)
+	{'leglht','legtl'},
+	{'leglht', 'legptl'},--this may need more hookery in 2 places below
+	{'leghive', 'legfhive'},
+	--{'cornanotc','cornanotcplat'},
+	{'legvp','legamsub'},
+	--{'corap','corplat'},
+	--{'corasp','corfasp'},
+	--{'corgeo','coruwgeo'},
+	--{'corageo','coruwageo'},
+}
+
+
+--this has to account for legotter too, later
 local ptlCons = {
 	['armbeaver'] = true,
 	['cormuskrat'] = true,
@@ -252,24 +285,41 @@ function widget:GameStart()
 	isPregame = false
 end
 
+local function addUnitDefPair(firstUnitName, lastUnitName)
+	local firstUnitDef = uDefNames[firstUnitName]
+	local lastUnitDef = uDefNames[lastUnitName]
+
+	if not (firstUnitDef and lastUnitDef and firstUnitDef.id and lastUnitDef.id) then
+		Spring.Echo(string.format("%s: can't add %s/%s pair", "cmd_context_build", firstUnitName, lastUnitName))
+		return
+	end
+
+	for i, unitDef in ipairs({firstUnitDef, lastUnitDef}) do
+		local unitDefID = unitDef.id
+		local isWater = i % 2 == 0
+
+		-- Break the unit list into two matching arrays
+		if isWater then
+			table.insert(waterBuildings, unitDefID)
+		else
+			table.insert(groundBuildings, unitDefID)
+		end
+	end
+end
+
 function widget:Initialize()
 	if Spring.IsReplay() or Spring.GetGameFrame() > 0 then
 		maybeRemoveSelf()
 	end
-	local uDefNames = UnitDefNames
-	for _,unitNames in ipairs(unitlist) do
-		for i, unitName in ipairs(unitNames) do
-			local unitDefID = uDefNames[unitName].id
-			local isWater = i % 2 == 0
-
-			-- Break the unit list into two matching arrays
-			if unitDefID then
-				if isWater then
-					table.insert(waterBuildings, unitDefID)
-				else
-					table.insert(groundBuildings, unitDefID)
-				end
-			end
+	
+	if Spring.GetModOptions().experimentallegionfaction then	
+		for _,v in ipairs(legionUnitlist) do 
+			table.insert(unitlist, v)
 		end
+	end
+
+	
+	for _,unitNames in ipairs(unitlist) do
+		addUnitDefPair(unitNames[1], unitNames[2])
 	end
 end

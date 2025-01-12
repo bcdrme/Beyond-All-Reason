@@ -101,13 +101,14 @@ local effectDefs = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 3.5, length = 35, piece = "thrusta", limit = true },
 	},
 	["legfig"] = {
-		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 25, piece = "thrust", limit = true },
+		{ color = { 0.7, 0.4, 0.1 }, width = 2, length = 15, piece = "thrust", limit = true },
 	},
 	["legionnaire"] = {
 		{ color = { 0.2, 0.4, 0.5 }, width = 3.5, length = 30, piece = "thrusta", limit = true },
 	},
 	["legvenator"] = {
-		{ color = { 0.3, 0.4, 0.6 }, width = 5.5, length = 55, piece = "thrusta", limit = true },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "lthrust", limit = true },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "rthrust", limit = true },
 	},
 	-- radar
 	["armawac"] = {
@@ -127,13 +128,8 @@ local effectDefs = {
 	--["armsehak"] = {
 	--	{ color = { 0.2, 0.8, 0.2 }, width = 3.5, length = 37, piece = "thrust", light = 1 },
 	--},
+	--drones
 
-	-- transports
-	["armatlas"] = {
-		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 12, piece = "thrustl", light = 1 },
-		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 12, piece = "thrustr", light = 1 },
-		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 15, piece = "thrustm", light = 1 }, --, xzVelocity = 1.5 -- removed xzVelocity else the other thrusters get disabled as well
-	},
 	["armdroneold"] = {
 		{ color = { 0.7, 0.4, 0.1 }, width = 1.5, length = 6, piece = "thrustl", light = 1 },
 		{ color = { 0.7, 0.4, 0.1 }, width = 1.5, length = 6, piece = "thrustr", light = 1 },
@@ -143,11 +139,33 @@ local effectDefs = {
 		{ color = { 0.7, 0.4, 0.1 }, width = 1.5, length = 6, piece = "thrustl", light = 1 },
 		{ color = { 0.7, 0.4, 0.1 }, width = 1.5, length = 6, piece = "thrustr", light = 1 },
 	},
+	["armtdrone"] = {
+		{ color = { 0.7, 0.4, 0.1 }, width = 1.5, length = 6, piece = "thrustl", light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 1.5, length = 6, piece = "thrustr", light = 1 },
+	},
+	-- transports
+	["armatlas"] = {
+		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 12, piece = "thrustl", light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 12, piece = "thrustr", light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 15, piece = "thrustm", light = 1 }, --, xzVelocity = 1.5 -- removed xzVelocity else the other thrusters get disabled as well
+	},
+	["armhvytrans"] = {
+		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 15, piece = "thrustfl", light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 15, piece = "thrustfr", light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 15, piece = "thrustbl", light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 3, length = 15, piece = "thrustbr", light = 1 }, --, xzVelocity = 1.5 -- removed xzVelocity else the other thrusters get disabled as well
+	},
 	["corvalk"] = {
 		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrust1", emitVector = { 0, 1, 0 }, light = 1 },
 		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrust3", emitVector = { 0, 1, 0 }, light = 1 },
 		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrust2", emitVector = { 0, 1, 0 }, light = 1 },
 		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrust4", emitVector = { 0, 1, 0 }, light = 1 },
+	},
+	["corhvytrans"] = {
+		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrustfl", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrustfr", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrustbl", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "thrustbr", emitVector = { 0, 1, 0 }, light = 1 },
 	},
 	["armdfly"] = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 3.5, length = 35, piece = "thrusta", xzVelocity = 1.5, light = 1 },
@@ -159,15 +177,21 @@ local effectDefs = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "thrustfra", emitVector = { 0, 1, 0 }, light = 0.75 },
 		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "thrustfla", emitVector = { 0, 1, 0 }, light = 0.75 },
 	},
+	["legatrans"] = {
+		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "rightGroundThrust", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 6, length = 17, piece = "leftGroundThrust", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 17, piece = "rightMainThrust", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 17, piece = "leftMainThrust", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 2, length = 8.5, piece = "rightMiniThrust", emitVector = { 0, 1, 0 }, light = 1 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 2, length = 8.5, piece = "leftMiniThrust", emitVector = { 0, 1, 0 }, light = 1 },
+	},
 	["legstronghold"] = {
-		{ color = { 0.1, 0.4, 0.6 }, width = 13, length = 25, piece = "thrustrra", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 13, length = 25, piece = "thrustrla", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "thrustfra", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "thrustfla", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 13, length = 25, piece = "thrustrra2", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 13, length = 25, piece = "thrustrla2", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "thrustfra2", emitVector = { 0, 1, 0 }, light = 0.75 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "thrustfla2", emitVector = { 0, 1, 0 }, light = 0.75 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "bthrust1", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "bthrust2", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "lthrust1", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "lthrust2", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "rthrust1", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "rthrust2", emitVector = { 0, 1, 0 }, light = 0.6 },
 	},
 
 	-- gunships
@@ -177,6 +201,15 @@ local effectDefs = {
 	},
 	["armblade"] = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 3.5, length = 25, piece = "thrust", light = 1, xzVelocity = 1.5 },
+	},
+	["legmos"] = {
+		{ color = { 0.2, 0.8, 0.2 }, width = 2, length = 16, piece = "thrust", emitVector = { 0, 0, -1 }, xzVelocity = 1.5, light = 1 },
+	},
+	["legmost3"] = {
+		{ color = { 0.2, 0.8, 0.2 }, width = 4, length = 32, piece = "thrust", emitVector = { 0, 0, -1 }, xzVelocity = 3, light = 1 },
+	},
+	["legheavydrone"] = {
+		{ color = { 0.2, 0.8, 0.2 }, width = 2, length = 16, piece = "thrusttrail", emitVector = { 0, 0, -1 }, xzVelocity = 1.5, light = 1 },
 	},
 	["corape"] = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 4, length = 16, piece = "rthrust", emitVector = { 0, 0, -1 }, xzVelocity = 1.5, light = 1 },
@@ -211,10 +244,30 @@ local effectDefs = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 17, length = 44, piece = "thrustfla", emitVector = { 0, 1, 0 }, light = 0.6 },
 	},
 	["legfort"] = {
-		{ color = { 0.1, 0.4, 0.6 }, width = 15, length = 50, piece = "thrustrra", emitVector = { 0, 1, 0 }, light = 0.6 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 15, length = 50, piece = "thrustrla", emitVector = { 0, 1, 0 }, light = 0.6 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 13, length = 44, piece = "thrustfra", emitVector = { 0, 1, 0 }, light = 0.6 },
-		{ color = { 0.1, 0.4, 0.6 }, width = 13, length = 44, piece = "thrustfla", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust1", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust2", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust3", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust4", emitVector = { 0, 1, 0 }, light = 0.6 },
+	
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust5", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust6", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust7", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 3, length = 24, piece = "thrust8", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 32, piece = "thrust9", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 32, piece = "thrust10", emitVector = { 1, 1, 0 }, light = 0.6 },
+	},
+	["legfortt4"] = {
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust1", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust2", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust3", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust4", emitVector = { 0, 1, 0 }, light = 0.6 },
+	
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust5", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust6", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust7", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 6, length = 48, piece = "thrust8", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 12, length = 64, piece = "thrust9", emitVector = { 1, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 12, length = 64, piece = "thrust10", emitVector = { 1, 1, 0 }, light = 0.6 },
 	},
 	["corcut"] = {
 		{ color = { 0.2, 0.8, 0.2 }, width = 3.7, length = 15, piece = "thrusta", light = 1 },
@@ -235,6 +288,10 @@ local effectDefs = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 1.2, length = 5, piece = "thrustb", limit = true  },
 	},
 	["cordrone"] = {
+		{ color = { 0.1, 0.4, 0.6 }, width = 1.2, length = 5, piece = "thrusta", limit = true  },
+		{ color = { 0.1, 0.4, 0.6 }, width = 1.2, length = 5, piece = "thrustb", limit = true  },
+	},
+	["cortdrone"] = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 1.2, length = 5, piece = "thrusta", limit = true  },
 		{ color = { 0.1, 0.4, 0.6 }, width = 1.2, length = 5, piece = "thrustb", limit = true  },
 	},
@@ -297,10 +354,17 @@ local effectDefs = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 5, length = 35, piece = "thrusta2" },
 	},
 	["legcib"] = {
-		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 25, piece = "thrust", light = 1.3 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 25, piece = "lThrust", light = 1.3 },
+		{ color = { 0.7, 0.4, 0.1 }, width = 4, length = 25, piece = "rThrust", light = 1.3 },
 	},
 	["legkam"] = {
-		{ color = { 0.2, 0.8, 0.2 }, width = 2, length = 24, piece = "thrust", light = 1 },
+		{ color = { 0.2, 0.8, 0.2 }, width = 4, length = 25, piece = "thrust", light = 1 },
+	},
+	["legatorpbomber"] = {
+		{ color = { 0.2, 0.8, 0.2 }, width = 4, length = 25, piece = "rightAJet", light = 1 },
+		{ color = { 0.2, 0.8, 0.2 }, width = 4, length = 25, piece = "leftAJet", light = 1 },
+		{ color = { 0.2, 0.8, 0.2 }, width = 3, length = 19, piece = "rightBJet", light = 1 },
+		{ color = { 0.2, 0.8, 0.2 }, width = 3, length = 19, piece = "leftBJet", light = 1 },
 	},
 	["armsb"] = {
 		{ color = { 0.2, 0.8, 0.2 }, width = 4, length = 36, piece = "thrustc", light = 1 },
@@ -322,9 +386,10 @@ local effectDefs = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 10, length = 25, piece = "flarebr", emitVector = { 0, 1, 0 }, light = 0.6 },
 	},
 	["legphoenix"] = {
-		{ color = { 0.8, 0.7, 0.2 }, width = 4, length = 30, piece = "lthrust", light = 1 },
-		{ color = { 0.8, 0.7, 0.2 }, width = 5, length = 40, piece = "mthrust", light = 1 },
-		{ color = { 0.8, 0.7, 0.2 }, width = 4, length = 30, piece = "rthrust", light = 1 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 5, length = 36, piece = "rthrust", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 5, length = 36, piece = "rrthrust", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 5, length = 36, piece = "lthrust", emitVector = { 0, 1, 0 }, light = 0.6 },
+		{ color = { 0.1, 0.6, 0.4 }, width = 5, length = 36, piece = "llthrust", emitVector = { 0, 1, 0 }, light = 0.6 },
 	},
 	-- construction
 	["armca"] = {
@@ -335,6 +400,11 @@ local effectDefs = {
 	},
 	["corca"] = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 4, length = 15, piece = "thrust", xzVelocity = 1.2 },
+	},
+	["legca"] = {
+		{ color = { 0.1, 0.4, 0.6 }, width = 4, length = 15, piece = "mainThrust", xzVelocity = 1.2 },
+		{ color = { 0.1, 0.4, 0.6 }, width = 2, length = 7, piece = "thrustA", xzVelocity = 1.2 },
+		{ color = { 0.1, 0.4, 0.6 }, width = 2, length = 7, piece = "thrustB", xzVelocity = 1.2 },
 	},
 	["coraca"] = {
 		{ color = { 0.1, 0.4, 0.6 }, width = 6, length = 22, piece = "thrust", xzVelocity = 1.2 },
@@ -821,26 +891,21 @@ local function Activate(unitID, unitDefID, who, when)
 	local unitEffects = effectDefs[unitDefID]
 	for i = 1, #unitEffects do
 		local effectDef = unitEffects[i]
-		--Spring.Utilities.TableEcho(effectDef)
 		local color = effectDef.color
 		local emitVector = effectDef.emitVector
 		local effectdata = {
 			effectDef.width*0.4,effectDef.length, when,
 			emitVector[1],emitVector[2],emitVector[3],
 			color[1],color[2],color[3],
-			--math.floor(math.random() * 5) ,
 			effectDef.piecenum - 1,
 			0,0,0,0, -- this is needed to keep the lua copy of the vbo the correct size
 
 		}
-		--Spring.Echo("Adding", tostring(unitID).."_"..tostring(effectDef.piecenum))
 		pushElementInstance(jetInstanceVBO,effectdata,tostring(unitID).."_"..tostring(effectDef.piecenum), true, nil, unitID)
 	end
 end
 
 local function Deactivate(unitID, unitDefID, who)
-	--Spring.Echo(Spring.GetGameFrame(),who, "Deactivate(unitID, unitDefID)",unitID, unitDefID)
-
 	activePlanes[unitID] = nil
 
 	inactivePlanes[unitID] = unitDefID
@@ -978,12 +1043,11 @@ function widget:UnitDestroyed(unitID, unitDefID, unitTeam)
 	RemoveUnit(unitID, unitDefID, unitTeam)
 end
 
-local function GadgetCrashingAircraft(unitID, unitDefID, teamID)
+function widget:CrashingAircraft(unitID, unitDefID, teamID)
 	RemoveUnit(unitID, unitDefID, teamID)
 end
 
-
-function widget.RenderUnitDestroyed(unitID, unitDefID, unitTeam)
+function widget:RenderUnitDestroyed(unitID, unitDefID, unitTeam)
 	--Spring.Echo("RenderUnitDestroyed(unitID, unitDefID, unitTeam)",unitID, unitDefID, unitTeam)
 	RemoveUnit(unitID, unitDefID, unitTeam)
 end
@@ -1073,8 +1137,6 @@ function widget:Initialize()
 	WG['airjets'].removeAirJet =  function (airjetkey) ---- for WG external calls
 		return popElementInstance(jetInstanceVBO,airjetkey)
 	end
-
-	widgetHandler:RegisterGlobal('GadgetCrashingAircraft2', GadgetCrashingAircraft)
 end
 
 
@@ -1082,5 +1144,4 @@ function widget:Shutdown()
 	for unitID, unitDefID in pairs(activePlanes) do
 		RemoveUnit(unitID, unitDefID, spGetUnitTeam(unitID))
 	end
-	widgetHandler:DeregisterGlobal('GadgetCrashingAircraft2')
 end

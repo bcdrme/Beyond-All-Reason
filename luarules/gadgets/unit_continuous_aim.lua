@@ -53,9 +53,12 @@ local convertedUnitsNames = {
 	['armbanth'] = 1,
 	['corkorg'] = 1,
 	['armvang'] = 3,
+	['armcrus'] = 5,
+	['corsala'] = 6,
+	['corsiegebreaker'] = 5,
 
 	-- the following units get a faster reaimtime to counteract their turret acceleration
-  
+	['armthor'] = 4,
 	['armflash'] = 6,
 	['corgator'] = 6,
 	['armdecade'] = 6,
@@ -78,20 +81,32 @@ local convertedUnitsNames = {
 	['armcom'] = 5,
 	['cordecom'] = 5,
 	['armdecom'] = 5,
-
+	['legcom'] = 5,
+	['legdecom'] = 5,
+	['legcomlvl2'] = 5,
+	['legcomlvl3'] = 5,
+	['legcomlvl4'] = 5,
+	['legcomlvl5'] = 5,
+	['legcomlvl6'] = 5,
+	['legcomlvl7'] = 5,
+	['legcomlvl8'] = 5,
+	['legcomlvl9'] = 5,
+	['legcomlvl10'] = 5,
+	['legah'] = 5,
 	['legbal'] = 5,
 	['legbastion'] = 5,
 	['legcen'] = 2,
 	['legfloat'] = 5,
 	['leggat'] = 5,
 	['leggob'] = 5,
-	['leginc'] = 10,
+	['leginc'] = 3,
 	['cordemon'] = 6,
 	['corcrwh'] = 7,
 	['leglob'] = 5,
 	['legmos'] = 5,
 	['leghades'] = 5,
 	['leghelios'] = 5,
+	['legheavydrone'] = 5,
 	['legkeres'] = 5,
 	['legrail'] = 5,
 	['legbar'] = 5,
@@ -102,15 +117,23 @@ local convertedUnitsNames = {
 	['legbart'] = 5,
 	['legmrv'] = 5,
 	['legsco'] = 5,
-	['legcom'] = 5,
-	['legcomlvl2'] = 5,
-	['legcomlvl3'] = 5,
-	['legcomlvl4'] = 5,
 	['leegmech'] = 5,
 	['legionnaire'] = 5,
 	['legvenator'] = 5,
-  ['legmed'] = 5,
+    ['legmed'] = 5,
+	['legaheattank'] = 3,
+	['legrwall'] = 4,
+	['legjav'] = 1,
 }
+--add entries for scavboss
+local scavengerBossV4Table = {'scavengerbossv4_veryeasy', 'scavengerbossv4_easy', 'scavengerbossv4_normal', 'scavengerbossv4_hard', 'scavengerbossv4_veryhard', 'scavengerbossv4_epic',
+ 'scavengerbossv4_veryeasy_scav', 'scavengerbossv4_easy_scav', 'scavengerbossv4_normal_scav', 'scavengerbossv4_hard_scav', 'scavengerbossv4_veryhard_scav', 'scavengerbossv4_epic_scav'}
+for _, name in pairs(scavengerBossV4Table) do
+	convertedUnitsNames[name] = 4
+end
+--if Spring.GetModOptions().emprework then
+	--convertedUnitsNames['armdfly'] = 50
+--end
 -- convert unitname -> unitDefID
 local convertedUnits = {}
 for name, params in pairs(convertedUnitsNames) do

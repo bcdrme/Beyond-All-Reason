@@ -38,6 +38,16 @@ RmlUi.LoadFontFace("fonts/Exo2-SemiBold.otf", true)
 RmlUi.LoadFontFace("fonts/SourceHanSans-Regular.ttc", true)
 RmlUi.LoadFontFace("fonts/monospaced/SourceCodePro-Medium.otf")
 
+local oldCreateContext = RmlUi.CreateContext
+
+local function NewCreateContext(name)
+	local context = oldCreateContext(name)
+	context.dp_ratio = Spring.GetConfigFloat("ui_scale", 1)
+	return context
+end
+
+RmlUi.CreateContext = NewCreateContext
+
 -- Mouse Cursor Aliases
 --[[
 	These let standard CSS cursor names be used when doing styling.
@@ -45,7 +55,6 @@ RmlUi.LoadFontFace("fonts/monospaced/SourceCodePro-Medium.otf")
 	CSS cursor list: https://developer.mozilla.org/en-US/docs/Web/CSS/cursor
 	RmlUi documentation: https://mikke89.github.io/RmlUiDoc/pages/rcss/user_interface.html#cursor
 ]]
-
 -- when "cursor: normal" is set via RCSS, "cursornormal" will be sent to the engine... and so on for the rest
 RmlUi.SetMouseCursorAlias("default", 'cursornormal')
 RmlUi.SetMouseCursorAlias("pointer", 'Move') -- command cursors use the command name. TODO: replace with actual pointer cursor?

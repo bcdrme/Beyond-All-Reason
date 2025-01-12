@@ -1,4 +1,3 @@
-
 function widget:GetInfo()
 	return {
 		name      = "DGun Stall Assist",
@@ -7,13 +6,10 @@ function widget:GetInfo()
 		date      = "2 April 2010",
 		license   = "GNU GPL, v2 or later",
 		layer     = 0,
-		enabled   = true  --  loaded by default?
+		enabled   = true
 	}
 end
 
-----------------------------------------------------------------
--- Config
-----------------------------------------------------------------
 local targetEnergy = 600
 local watchForTime = 5
 
@@ -22,12 +18,12 @@ local watchForTime = 5
 ----------------------------------------------------------------
 local watchTime = 0
 local waitedUnits = nil -- nil / waitedUnits[1..n] = uID
-local shouldWait = {} -- shouldWait[uDefID] = true / nil
-local isFactory = {} -- isFactory[uDefID] = true / nil
+local shouldWait = {}
+local isFactory = {}
 
 local gameStarted
 
-local stallIds = {UnitDefNames['armcom'].id, UnitDefNames['corcom'].id}
+local stallIds = {UnitDefNames['armcom'].id, UnitDefNames['corcom'].id, UnitDefNames['legcom'] and UnitDefNames['legcom'].id}
 
 ----------------------------------------------------------------
 -- Speedups
@@ -40,7 +36,6 @@ local spGetMyTeamID = Spring.GetMyTeamID
 local spGetTeamResources = Spring.GetTeamResources
 local spGetTeamUnits = Spring.GetTeamUnits
 local spGetUnitDefID = Spring.GetUnitDefID
-local spGetSpectatingState = Spring.GetSpectatingState
 local spGetUnitIsBeingBuilt = Spring.GetUnitIsBeingBuilt
 
 local CMD_DGUN = CMD.DGUN
@@ -74,7 +69,7 @@ function widget:Initialize()
     end
 
 	for uDefID, uDef in pairs(UnitDefs) do
-		if (uDef.buildSpeed > 0) and uDef.canAssist and (not uDef.canManualFire) then
+		if uDef.buildSpeed > 0 and uDef.canAssist and not uDef.canManualFire then
 			shouldWait[uDefID] = true
 			if uDef.isFactory then
 				isFactory[uDefID] = true
@@ -95,14 +90,14 @@ function widget:Update(dt)
 				stallUnitSelected = true
 			end
 		end
-		
-		if (stallUnitSelected) then
+
+		if stallUnitSelected then
 			watchTime = watchForTime
 		end
 	else
 		watchTime = watchTime - dt
 
-		if waitedUnits and (watchTime < 0) then
+		if waitedUnits and watchTime < 0 then
 
 			local toUnwait = {}
 			for i = 1, #waitedUnits do
@@ -126,11 +121,11 @@ function widget:Update(dt)
 		end
 	end
 
-	if (watchTime > 0) and (not waitedUnits) then
+	if watchTime > 0 and not waitedUnits then
 
 		local myTeamID = spGetMyTeamID()
 		local currentEnergy, energyStorage = spGetTeamResources(myTeamID, "energy")
-		if (currentEnergy < targetEnergy) and (energyStorage >= targetEnergy) then
+		if currentEnergy < targetEnergy and energyStorage >= targetEnergy then
 
 			waitedUnits = {}
 			local myUnits = spGetTeamUnits(myTeamID)

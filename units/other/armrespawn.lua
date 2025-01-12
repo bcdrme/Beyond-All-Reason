@@ -17,7 +17,6 @@ return {
 		canrepeat = false,
 		canstop = true,
 		cantbetransported = true,
-		category = "ALL NOTSUB NOWEAPON NOTAIR NOTHOVER SURFACE EMPABLE",
 		collisionvolumeoffsets = "0 0 0",
 		collisionvolumescales = "31 50 31",
 		collisionvolumetype = "CylY",
@@ -41,11 +40,8 @@ return {
 		terraformspeed = 1000,
 		turnrate = 1,
 		upright = true,
+		waterline = 0,
 		workertime = Spring.GetModOptions().commanderbuildersbuildpower,
-		-- buildoptions = {
-		-- 	"armcom",
-		-- 	"armassistdrone",
-		-- },
 		customparams = {
 			usebuildinggrounddecal = false,
 			buildinggrounddecaltype = "decals/armnanotc_aoplane.dds",
@@ -55,8 +51,7 @@ return {
 			unitgroup = 'builder',
 			model_author = "Beherith",
 			normaltex = "unittextures/Arm_normal.dds",
-			subfolder = "armbuildings/seautil",
-			--iscommander = true,
+			subfolder = "ArmBuildings/SeaUtil",
 		},
 		sfxtypes = {
 			pieceexplosiongenerators = {

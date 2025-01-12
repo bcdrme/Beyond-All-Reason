@@ -6,7 +6,7 @@ function gadget:GetInfo()
 		date      = "Sept 19th 2017",
 		license   = "GNU GPL, v2 or later",
 		layer     = 0,
-		enabled   = true  --  loaded by default?
+		enabled   = true
 	}
 end
 
@@ -36,7 +36,7 @@ for udid, ud in pairs(UnitDefs) do
 	if ud.customParams.fighter then
 		isFighter[udid] = true
 	end
-	if (ud["weapons"] and ud["weapons"][1] and isBomb[ud["weapons"][1].weaponDef] == true) or (string.find(ud.name, 'armlance') or string.find(ud.name, 'cortitan')) then
+	if (ud["weapons"] and ud["weapons"][1] and isBomb[ud["weapons"][1].weaponDef] == true) or (string.find(ud.name, 'armlance') or string.find(ud.name, 'cortitan') or string.find(ud.name, 'legatorpbomber')) then
 		isBomber[udid] = true
 	end
 	unitTurnRadius[udid] = ud.turnRadius
@@ -44,6 +44,7 @@ end
 isBomb = nil
 
 function gadget:Initialize()
+	gadgetHandler:RegisterAllowCommand(CMD.ANY)
 	for ct, unitID in pairs(Spring.GetAllUnits()) do
 		gadget:UnitCreated(unitID, Spring.GetUnitDefID(unitID))
 	end

@@ -7,6 +7,7 @@ function widget:GetInfo()
 		license = "Lua code: GNU GPL, v2 or later, Shader GLSL code: (c) Beherith (mysterme@gmail.com)",
 		layer = 999,
 		enabled = true,
+		depends = {'gl4'},
 	}
 end
 
@@ -750,10 +751,6 @@ local function randtablechoice (t)
 	return next(t)
 end
 
-function widget:Explosion(weaponDefID, px, py, pz, AttackerID, ProjectileID) -- This callin is not registered!
-	---Spring.Echo("widget:Explosion",weaponDefID, px, py, pz, AttackerID, ProjectileID)
-end
-
 -- Solars, nanos, wind, advsolars, metal makers,
 local buildingExplosionPositionVariation = {
 	nanoboom = 1,
@@ -1081,6 +1078,29 @@ for weaponDefID=1, #WeaponDefs do
 			glowadd = 1.8
 			bwfactor = 0.1
 
+		elseif string.find(weaponDef.name, 'pineappleofdoom') or string.find(weaponDef.name, 'heatraylarge') or string.find(weaponDef.name, 'skybeam') or string.find(weaponDef.name, 'heat_ray') then --legbastion leginc legphoenix legaheattank
+			textures = { "t_groundcrack_16_a.tga", "t_groundcrack_17_a.tga", "t_groundcrack_05_a.tga" }
+			--textures = { "t_groundcrack_16_a.tga", "t_groundcrack_17_a.tga", "t_groundcrack_10_a.tga" }
+			alphadecay = 0.004
+			radius = radius * 0.8 
+			--radiusVariation = 0.3
+			heatstart = 8000
+			heatdecay = 3.95
+			glowsustain = 20
+			glowadd = 2.8
+			bwfactor = 0.1
+
+		elseif string.find(weaponDef.name, 'starfire') then
+			textures = { "t_groundcrack_16_a.tga", "t_groundcrack_09_a.tga", "t_groundcrack_10_a.tga" }
+			alphadecay = 0.003
+			radius = radius * 1.2 --* (math.random() * 20 + 0.2)
+			radiusVariation = 0.6
+			heatstart = 9000
+			heatdecay = 2.5
+			glowsustain = 0
+			glowadd = 2.5
+			bwfactor = 0.3
+
 		elseif string.find(weaponDef.name, 'footstep') then
 			--textures = { "f_corkorg_a.tga" }
 			textures = { "t_groundcrack_10_a.tga" }
@@ -1119,8 +1139,7 @@ for weaponDefID=1, #WeaponDefs do
 	end
 end
 
-local function GadgetWeaponExplosionDecal(px, py, pz, weaponID, ownerID)
-	--Spring.Echo("GadgetWeaponExplosionDecal",px, py, pz, weaponID, ownerID, weaponDef.damageAreaOfEffect, weaponDef.name)
+function widget:VisibleExplosion(px, py, pz, weaponID, ownerID)
 	local random = math.random
 	local params = weaponConfig[weaponID]
 	if not params then
@@ -1907,10 +1926,6 @@ local function UnitScriptDecal(unitID, unitDefID, whichDecal, posx, posz, headin
 end
 
 function widget:Initialize()
-	if not gl.CreateShader then -- no shader support, so just remove the widget itself, especially for headless
-		widgetHandler:RemoveWidget()
-		return
-	end
 	local t0 = Spring.GetTimer()
 	--if makeAtlases() == false then
 	--	goodbye("Failed to init texture atlas for DecalsGL4")
@@ -1956,7 +1971,6 @@ function widget:Initialize()
 
 	widgetHandler:RegisterGlobal('AddDecalGL4', WG['decalsgl4'].AddDecalGL4)
 	widgetHandler:RegisterGlobal('RemoveDecalGL4', WG['decalsgl4'].RemoveDecalGL4)
-	widgetHandler:RegisterGlobal('GadgetWeaponExplosionDecal', GadgetWeaponExplosionDecal)
 	widgetHandler:RegisterGlobal('UnitScriptDecal', UnitScriptDecal)
 	--Spring.Echo(string.format("Decals GL4 loaded %d textures in %.3fs",numFiles, Spring.DiffTimers(Spring.GetTimer(), t0)))
 	--Spring.Echo("Trying to access _G[NightModeParams]", _G["NightModeParams"])
@@ -2036,7 +2050,6 @@ function widget:ShutDown()
 	WG['decalsgl4'] = nil
 	widgetHandler:DeregisterGlobal('AddDecalGL4')
 	widgetHandler:DeregisterGlobal('RemoveDecalGL4')
-	widgetHandler:DeregisterGlobal('GadgetWeaponExplosionDecal')
 	widgetHandler:DeregisterGlobal('UnitScriptDecal')
 end
 

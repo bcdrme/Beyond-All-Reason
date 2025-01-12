@@ -9,7 +9,8 @@ function widget:GetInfo()
 		date = "2022.06.10",
 		license = "Lua code is GPL V2, GLSL is (c) Beherith (mysterme@gmail.com)",
 		layer = -99999990,
-		enabled = true
+		enabled = true,
+		depends = {'gl4'},
 	}
 end
 
@@ -273,7 +274,7 @@ local lightParamKeyOrder = { -- This table is a 'quick-ish' way of building the 
 	pos2x = 5, pos2y = 6, pos2z = 7, -- beam lights only, specifies the endpoint of the beam
 	modelfactor = 13, specular = 14, scattering = 15, lensflare = 16,
 	lifetime = 18, sustain = 19, animtype = 20, -- animtype unused
-	
+
 	-- NOTE THERE ARE 4 MORE UNUSED SLOTS HERE RESERVED FOR FUTURE USE! -- Nope, beherith ate these like a greedy boy
 	color2r = 21, color2g = 22, color2b = 23, colortime = 24, -- point lights only, colortime in seconds for unit-attached
 }
@@ -810,8 +811,7 @@ end
 
 local function AddStaticLightsForUnit(unitID, unitDefID, noUpload, reason)
 	if unitDefLights[unitDefID] then
-		local _,_,_,_, buildprogress = Spring.GetUnitHealth(unitID)
-		if buildprogress < 1 then return end
+		if Spring.GetUnitIsBeingBuilt(unitID) then return end
 		local unitDefLight = unitDefLights[unitDefID]
 		if unitDefLight.initComplete ~= true then  -- late init
 			for lightname, lightParams in pairs(unitDefLight) do
@@ -821,8 +821,6 @@ local function AddStaticLightsForUnit(unitID, unitDefID, noUpload, reason)
 		end
 		for lightname, lightParams in pairs(unitDefLight) do
 			if lightname ~= 'initComplete' then
-				--Spring.Debug.TraceFullEcho(nil,nil,nil,"AddStaticLightsForUnit")
-				--Spring.Debug.TableEcho(lightParams)
 				local targetVBO = unitLightVBOMap[lightParams.lightType]
 
 				if (not spec) and lightParams.alliedOnly == true and Spring.IsUnitAllied(unitID) == false then return end
@@ -878,7 +876,13 @@ local function RemoveLight(lightshape, instanceID, unitID, noUpload)
 			Spring.Echo("RemoveLight tried to remove a non-existing unitlight", lightshape, instanceID, unitID)
 		end
 	elseif lightshape then
-		return popElementInstance(lightVBOMap[lightshape], instanceID)
+		if lightVBOMap[lightshape].instanceIDtoIndex[instanceID] then
+			return popElementInstance(lightVBOMap[lightshape], instanceID)
+		else
+			if not noUpload then
+				Spring.Echo("RemoveLight tried to remove a non-existing light", lightshape, instanceID, unitID)
+			end
+		end
 	else
 		Spring.Echo("RemoveLight tried to remove a non-existing light", lightshape, instanceID, unitID)
 	end
@@ -963,7 +967,6 @@ local function LoadLightConfig()
 	return success and success2
 end
 
-local mapinfo = nil
 local nightFactor = 1 --0.33
 local unitNightFactor = 1 -- applied above nightFactor default 1.2
 local adjustfornight = {'unitAmbientColor', 'unitDiffuseColor', 'unitSpecularColor','groundAmbientColor', 'groundDiffuseColor', 'groundSpecularColor' }
@@ -975,7 +978,8 @@ for wdid, wd in pairs(WeaponDefs) do
 		targetable[wdid] = true
 	end
 end
-local function GadgetWeaponExplosion(px, py, pz, weaponID, ownerID)
+
+function widget:VisibleExplosion(px, py, pz, weaponID, ownerID)
 	if targetable[weaponID] and py-300 > Spring.GetGroundHeight(px, pz) then	-- dont add light to (likely) intercepted explosions (mainly to curb nuke flashes)
 		return
 	end
@@ -987,13 +991,12 @@ local function GadgetWeaponExplosion(px, py, pz, weaponID, ownerID)
 			lightParamTable[1] = px
 			lightParamTable[2] = py
 			lightParamTable[3] = pz
-			--Spring.Echo("GadgetWeaponExplosion added:",  explosionLights[weaponID].lightClassName, px, py, pz)
 			AddLight(nil, nil, nil, pointLightVBO, lightParamTable) --(instanceID, unitID, pieceIndex, targetVBO, lightparams, noUpload)
 		end
 	end
 end
 
-local function GadgetWeaponBarrelfire(px, py, pz, weaponID, ownerID)
+function widget:Barrelfire(px, py, pz, weaponID, ownerID)
 	if muzzleFlashLights[weaponID] then
 		local lightParamTable = muzzleFlashLights[weaponID].lightParamTable
 		if muzzleFlashLights[weaponID].alwaysVisible or spIsSphereInView(px,py,pz, lightParamTable[4]) then
@@ -1001,14 +1004,12 @@ local function GadgetWeaponBarrelfire(px, py, pz, weaponID, ownerID)
 			lightParamTable[1] = px
 			lightParamTable[2] = py
 			lightParamTable[3] = pz
-			--Spring.Echo("GadgetWeaponBarrelfire added:",  muzzleFlashLights[weaponID].lightClassName, px, py, pz)
 			AddLight(nil, nil, nil, pointLightVBO, lightParamTable) --(instanceID, unitID, pieceIndex, targetVBO, lightparams, noUpload)
 		end
 	end
 end
 
 local function UnitScriptLight(unitID, unitDefID, lightIndex, param)
-	--Spring.Echo("Widgetside UnitScriptLight", unitID, unitDefID, lightIndex, param)
 	if spValidUnitID(unitID) and spGetUnitIsDead(unitID) == false and visibleUnits[unitID] and unitEventLights.UnitScriptLights[unitDefID] and unitEventLights.UnitScriptLights[unitDefID][lightIndex] then
 		local lightTable = unitEventLights.UnitScriptLights[unitDefID][lightIndex]
 		if not lightTable.alwaysVisible then
@@ -1079,39 +1080,35 @@ function widget:Shutdown()
 	widgetHandler:DeregisterGlobal('RemoveLight')
 	widgetHandler:DeregisterGlobal('GetLightVBO')
 
-	widgetHandler:DeregisterGlobal('GadgetCrashingAircraft')
-	widgetHandler:DeregisterGlobal('GadgetWeaponExplosion')
-	widgetHandler:DeregisterGlobal('GadgetWeaponBarrelfire')
-
 	widgetHandler:DeregisterGlobal('UnitScriptLight')
-	
+
 	deferredLightShader:Delete()
 	local ram = 0
-	for lighttype, vbo in pairs(unitLightVBOMap) do ram = ram + vbo:Delete() end 
+	for lighttype, vbo in pairs(unitLightVBOMap) do ram = ram + vbo:Delete() end
 	for lighttype, vbo in pairs(projectileLightVBOMap) do ram = ram + vbo:Delete() end
-	for lighttype, vbo in pairs(lightVBOMap) do ram = ram + vbo:Delete() end 	
+	for lighttype, vbo in pairs(lightVBOMap) do ram = ram + vbo:Delete() end
 	ram = ram + cursorPointLightVBO:Delete()
-	
-	--Spring.Echo("DLGL4 ram usage MB = ", ram / 1000000) 
+
+	--Spring.Echo("DLGL4 ram usage MB = ", ram / 1000000)
 	--Spring.Echo("featureDefLights", table.countMem(featureDefLights))
 	--Spring.Echo("unitEventLights", table.countMem(unitEventLights))
 	--Spring.Echo("unitDefLights", table.countMem(unitDefLights))
 	--Spring.Echo("projectileDefLights", table.countMem(projectileDefLights))
 	--Spring.Echo("explosionLights", table.countMem(explosionLights))
-	
-	-- Note, these must be nil'ed manually, because 
+
+	-- Note, these must be nil'ed manually, because
 	-- tables included from VFS.Include dont get GC'd unless specifically nil'ed
 	unitDefLights = nil
 	featureDefLights = nil
 	unitEventLights = nil
-	muzzleFlashLights = nil 
-	projectileDefLights = nil 
-	explosionLights  = nil 
-	gibLight = nil 
-	
+	muzzleFlashLights = nil
+	projectileDefLights = nil
+	explosionLights  = nil
+	gibLight = nil
+
 	--collectgarbage("collect")
 	--collectgarbage("collect")
-	
+
 end
 
 local windX = 0
@@ -1219,7 +1216,7 @@ end
 function widget:UnitDestroyed(unitID, unitDefID, teamID) -- dont do piece-attached lights here!
 	eventLightSpawner("UnitDestroyed", unitID, unitDefID, teamID)
 end
-local function GadgetCrashingAircraft(unitID, unitDefID, teamID)
+function widget:CrashingAircraft(unitID, unitDefID, teamID)
 	RemoveUnitAttachedLights(unitID)
 end
 
@@ -1246,31 +1243,35 @@ function widget:StockpileChanged(unitID, unitDefID, teamID, weaponNum, oldCount,
 	end
 end
 
-function widget:FeatureCreated(featureID,allyteam)
+function widget:FeatureCreated(featureID, noUpload)
+	if type(noUpload) ~= 'boolean' then noUpload = nil end
 	-- TODO: Allow team-colored feature lights by getting teamcolor and putting it into lightCacheTable
 	local featureDefID = Spring.GetFeatureDefID(featureID)
 	if featureDefLights[featureDefID] then
 		for lightname, lightTable in pairs(featureDefLights[featureDefID]) do
 			if not lightTable.initComplete then InitializeLight(lightTable) end
 			local px, py, pz = Spring.GetFeaturePosition(featureID)
-			if px then
+			if px and featureID%(lightTable.fraction or 1 ) == 0 then
 
 				local lightParamTable = lightTable.lightParamTable
 				for i=1, lightParamTableSize do lightCacheTable[i] = lightParamTable[i] end
-				lightCacheTable[1] = lightCacheTable[1] + px
-				lightCacheTable[2] = lightCacheTable[2] + py
-				lightCacheTable[3] = lightCacheTable[3] + pz
-				AddLight(tostring(featureID) ..  lightname, nil, nil, lightVBOMap[lightTable.lightType], lightCacheTable)
+				lightCacheTable[1] = lightParamTable[1] + px
+				lightCacheTable[2] = lightParamTable[2] + py
+				lightCacheTable[3] = lightParamTable[3] + pz
+				AddLight(tostring(featureID) ..  lightname, nil, nil, lightVBOMap[lightTable.lightType], lightCacheTable, noUpload)
 			end
 		end
 	end
 end
 
-function widget:FeatureDestroyed(featureID)
+function widget:FeatureDestroyed(featureID, noUpload)
+	if type(noUpload) ~= 'boolean' then noUpload = nil end
 	local featureDefID = Spring.GetFeatureDefID(featureID)
 	if featureDefLights[featureDefID] then
 		for lightname, lightTable in pairs(featureDefLights[featureDefID]) do
-			RemoveLight(lightTable.lightType, tostring(featureID) ..  lightname)
+			if featureID % (lightTable.fraction or 1 ) == 0 then
+				RemoveLight(lightTable.lightType, tostring(featureID) ..  lightname, nil, noUpload)
+			end
 		end
 	end
 end
@@ -1306,28 +1307,24 @@ local function updateProjectileLights(newgameframe)
 				if newgameframe then
 					--update proj pos
 					lightType = trackedProjectileTypes[projectileID]
-					if lightType ~= 'beam' then 
+					if lightType ~= 'beam' then
 						local dx,dy,dz = spGetProjectileVelocity(projectileID)
 						local instanceIndex = updateLightPosition(projectileLightVBOMap[lightType],
 							projectileID, px,py,pz, nil, dx,dy,dz)
 						if debugproj then Spring.Echo("Updated", instanceIndex, projectileID, px, py, pz,dx,dy,dz) end
 					end
-					
+
 				end
 			else
 				-- add projectile
 				local weapon, piece = spGetProjectileType(projectileID)
 				if piece then
 					local explosionflags = spGetPieceProjectileParams(projectileID)
-					--if explosionflags and explosionflags%32 > 15 then
-						local gib = gibLight.lightParamTable
-						gib[1] = px
-						gib[2] = py
-						gib[3] = pz
-						AddLight(projectileID, nil, nil, projectilePointLightVBO, gib, noUpload)
-						--Spring.Echo("added gib")
-						--Spring.Debug.TableEcho(gib)
-					--end
+					local gib = gibLight.lightParamTable
+					gib[1] = px
+					gib[2] = py
+					gib[3] = pz
+					AddLight(projectileID, nil, nil, projectilePointLightVBO, gib, noUpload)
 				else
 					local weaponDefID = spGetProjectileDefID ( projectileID )
 					if projectileDefLights[weaponDefID] and ( projectileID % (projectileDefLights[weaponDefID].fraction or 1) == 0 ) then
@@ -1346,7 +1343,7 @@ local function updateProjectileLights(newgameframe)
 							lightParamTable[5] = px + dx
 							lightParamTable[6] = py + dy
 							lightParamTable[7] = pz + dz
-						else 
+						else
 							-- for points and cones, velocity gives the pointing dir, and for cones it gives the pos super well.
 							lightParamTable[5] = dx
 							lightParamTable[6] = dy
@@ -1379,11 +1376,11 @@ local function updateProjectileLights(newgameframe)
 			-- SO says we can modify or remove elements while iterating, we just cant add
 			-- a possible hack to keep projectiles visible, is trying to keep getting their pos
 			local px, py, pz = spGetProjectilePosition(projectileID)
-			if px then -- this means that this projectile 
+			if px then -- this means that this projectile
 				local lightType = trackedProjectileTypes[projectileID]
 				if newgameframe and lightType ~= 'beam' then
 					local dx,dy,dz = spGetProjectileVelocity(projectileID)
-					updateLightPosition(projectileLightVBOMap[lightType], 
+					updateLightPosition(projectileLightVBOMap[lightType],
 						projectileID, px,py,pz, nil, dx,dy,dz )
 				end
 			else
@@ -1420,6 +1417,13 @@ local function checkConfigUpdates()
 			if WG['unittrackerapi'] and WG['unittrackerapi'].visibleUnits then
 				widget:VisibleUnitsChanged(WG['unittrackerapi'].visibleUnits, nil)
 			end
+			for i, featureID in pairs(Spring.GetAllFeatures()) do
+				widget:FeatureDestroyed(featureID, true)
+			end
+			for i, featureID in pairs(Spring.GetAllFeatures()) do
+				widget:FeatureCreated(featureID, true)
+			end
+			if pointLightVBO.dirty then uploadAllElements(pointLightVBO) end
 			configCache.confa = newconfa
 			configCache.confb = newconfb
 		end
@@ -1626,13 +1630,11 @@ function widget:Initialize()
 	local success, mapinfo = pcall(VFS.Include,"mapinfo.lua") -- load mapinfo.lua confs
 
 	if nightFactor ~= 1 then
-		--Spring.Debug.TableEcho(mapinfo)
 		local nightLightingParams = {}
 		for _,v in ipairs(adjustfornight) do
 			nightLightingParams[v] = mapinfo.lighting[string.lower(v)]
 			if nightLightingParams[v] ~= nil then
 				for k2, v2 in pairs(nightLightingParams[v]) do
-					--Spring.Echo(v,k2,v2)
 					if tonumber(v2) then
 						if string.find(v, 'unit', nil, true) then
 							nightLightingParams[v][k2] = v2 * nightFactor * unitNightFactor
@@ -1692,10 +1694,6 @@ function widget:Initialize()
 	widgetHandler:RegisterGlobal('AddLight', WG['lightsgl4'].AddLight)
 	widgetHandler:RegisterGlobal('RemoveLight', WG['lightsgl4'].RemoveLight)
 	widgetHandler:RegisterGlobal('GetLightVBO', WG['lightsgl4'].GetLightVBO)
-
-	widgetHandler:RegisterGlobal('GadgetCrashingAircraft', GadgetCrashingAircraft)
-	widgetHandler:RegisterGlobal('GadgetWeaponExplosion', GadgetWeaponExplosion)
-	widgetHandler:RegisterGlobal('GadgetWeaponBarrelfire', GadgetWeaponBarrelfire)
 
 	widgetHandler:RegisterGlobal('UnitScriptLight', UnitScriptLight)
 end

@@ -15,6 +15,7 @@ CallInsList = {
 	"Shutdown",
 	"LayoutButtons",
 	"ConfigureLayout",
+	"ActiveCommandChanged",
 	"CommandNotify",
 
 	"KeyPress",
@@ -108,7 +109,6 @@ CallInsList = {
 
 	"SunChanged",
 
-	"Explosion",
 	"ShockFront",
 
 	"RecvSkirmishAIMessage",
@@ -135,7 +135,15 @@ CallInsList = {
 	"DownloadFailed",
 	"DownloadProgress",
 
-	"LanguageChanged"
+	"LanguageChanged",
+
+	"UnitSale",
+	"UnitSold",
+
+	"VisibleExplosion",
+	"Barrelfire",
+	"CrashingAircraft",
+	"ClearMapMarks",
 }
 
 CallInsMap = {}
