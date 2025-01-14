@@ -2223,6 +2223,14 @@ local icontypes = {
 		bitmap = "icons/vehicle_t2_vroc.png",
 		size = 1.62749982
 	},
+	legavrad = {
+		bitmap = "icons/vehicle_t2_radar.png",
+		size = 1.36499989
+	},
+	legavjam = {
+		bitmap = "icons/vehicle_t2_jammer.png",
+		size = 1.36499989
+	},
 	legaheattank = {
 		bitmap = "icons/vehicle_t2_tank_heavylaser.png",
 		size = 1.73749986
@@ -2702,6 +2710,10 @@ local icontypes = {
 	legfmkr = {
 		bitmap = "icons/metalmaker_t1.png",
 		size = 0.78749996
+	},
+	legfus = {
+		bitmap = "icons/fusion.png",
+		size = 1.46999991
 	},
 	legtriarius = {
 		bitmap = "icons/ship_destroyer.png",
