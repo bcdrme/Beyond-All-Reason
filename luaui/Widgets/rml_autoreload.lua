@@ -8,35 +8,60 @@ function widget:GetInfo()
 		license = "GNU GPL, v2 or later",
 		handler = true,
 		layer = -1, -- load before all widgets that need this tool
-		enabled = true
+		enabled = false
 	}
 end
 
 ------------------------------------------------------------
 -- State
 ------------------------------------------------------------
-local registeredRmlWidgets = {}
+
+local registeredFiles = {}
+local filesContent = {}
 local lastUpdate = os.clock()
 
 ------------------------------------------------------------
--- Callins
+-- Functions
 ------------------------------------------------------------
 
-function widget:Update()
+local function register(file, widget)
+	print("rml_autoreload RmlAutoreload.register", file)
+	registeredFiles[file] = {
+		lastModified = os.clock(),
+		widget = widget
+	}
+	filesContent[file] = VFS.LoadFile(file)
+end
+
+local function checkRegisteredFiles()
 	local now = os.clock()
 	local timeSinceLastUpdate = now - lastUpdate
 	if timeSinceLastUpdate < 1 then
 		return
 	end
 	print("rml_autoreload widget:Update", timeSinceLastUpdate, "s")
-	for name, rmlWidget in pairs(registeredRmlWidgets) do
-		print("checking", name)
-		local document = rmlWidget.document
-		local stylesheet = rmlWidget.stylesheet
-		local context = rmlWidget.context
-		print("checked", document, stylesheet)
+
+	for file, meta in pairs(registeredFiles) do
+		print("checking if changed", file)
+		local newContent = VFS.LoadFile(file)
+		if newContent ~= filesContent[file] then
+			print("reloading", file)
+			registeredFiles[file] = nil
+			filesContent[file] = nil
+			meta.widget.Shutdown()
+			meta.widget.Initialize()
+			print("reloaded", file)
+		end
 	end
 	lastUpdate = now
+end
+
+------------------------------------------------------------
+-- Callins
+------------------------------------------------------------
+
+function widget:Update()
+	checkRegisteredFiles()
 end
 
 function widget:Initialize()
@@ -44,8 +69,5 @@ function widget:Initialize()
 
 	--make interfaces available to other widgets:
 	WG['RmlAutoreload'] = {}
-	WG['RmlAutoreload'].register = function(widget)
-		print("rml_autoreload RmlAutoreload.register", widget.name)
-		registeredRmlWidgets[widget.name] = widget
-	end
+	WG['RmlAutoreload'].register = register
 end

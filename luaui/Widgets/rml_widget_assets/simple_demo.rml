@@ -7,7 +7,7 @@
     </head>
     <body
             data-model="data_model_test"
-            style="top: 10%; left: 20%; min-width: 300dp; height: 70%;"
+            style="top: 0%; left: 0%; min-width: 300dp;"
     >
         <handle move_target="#document">
             <div class="element">
@@ -17,7 +17,7 @@
         <div class="element">
             <span>Below me is a flexbox</span>
             <div style="display: flex">
-                <div style="background-color: green; width: 250dp; height: 50dp">
+                <div style="background-color: blue; width: 150dp; height: 250dp">
                     Solid Color Block test
                 </div>
                 <div
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="element">
-            <h4 class="element" style="margin: 0.1em">Custom &lt;texture&gt; Element Demo</h4>
+            <h4 class="element" style="margin: 0.1em">This is simple reloading of the rmlui widget</h4>
             <div>&lt;texture src="^101"&gt;</div>
             <texture src="^101"/>
             <div>&lt;texture src="#101"&gt;</div>

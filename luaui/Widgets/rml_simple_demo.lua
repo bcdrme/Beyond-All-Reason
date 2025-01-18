@@ -16,6 +16,10 @@ local rmlContext
 local eventCallback = function(ev, ...) Spring.Echo('orig function says', ...) end
 local dm_handle
 
+------------------------------------------------------------
+-- Callins
+------------------------------------------------------------
+
 function widget:Initialize()
 	rmlContext = RmlUi.CreateContext(widget.whInfo.name)
 
@@ -38,16 +42,10 @@ function widget:Initialize()
 	document:ReloadStyleSheet()
 	document:Show()
 
-	print("rml_simple_demo attempt to register with rml_autoreload")
 	if WG.RmlAutoreload then
-		local rmlWidget = {
-			name       = "rml_simple_demo.lua",
-			document   = "luaui/Widgets/rml_widget_assets/simple_demo.rml",
-			stylesheet = "luaui/Widgets/rml_widget_assets/simple_demo.rcss",
-			context    = rmlContext,
-		}
-		WG.RmlAutoreload.register(rmlWidget)
-		print("rml_simple_demo registered ?")
+		WG.RmlAutoreload.register("luaui/Widgets/rml_widget_assets/simple_demo.rml", widget)
+		WG.RmlAutoreload.register("luaui/rml_common/styles.rcss", widget)
+		WG.RmlAutoreload.register("luaui/rml_common/flow_ui.rcss", widget)
 	end
 end
 
