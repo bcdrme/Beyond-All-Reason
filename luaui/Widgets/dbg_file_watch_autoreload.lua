@@ -1,7 +1,7 @@
 function widget:GetInfo()
 	return {
-		name = "RmlUi AutoReload",
-		desc = "Hot reloads RmlUi files when they change",
+		name = "File Watch Auto Reloader",
+		desc = "Reload bound widget on arbitrary file change. Check usage.",
 		author = "smile",
 		version = "1.0",
 		date = "Jan 18, 2024",
@@ -11,6 +11,18 @@ function widget:GetInfo()
 		enabled = false
 	}
 end
+
+------------------------------------------------------------
+-- Usage
+------------------------------------------------------------
+---
+--- Add this to the Initialize function of a widget that you want to reload when a file changes:
+---
+--- 	if WG.FileWatchAutoReloader then
+--- 		WG.FileWatchAutoReloader.register("path/to/file.rml", widget)
+--- 		WG.FileWatchAutoReloader.register("path/to/file2.rcss", widget)
+--- 	end
+---
 
 ------------------------------------------------------------
 -- State
@@ -25,7 +37,6 @@ local lastUpdate = os.clock()
 ------------------------------------------------------------
 
 local function register(file, widget)
-	print("rml_autoreload RmlAutoreload.register", file)
 	registeredFiles[file] = {
 		lastModified = os.clock(),
 		widget = widget
@@ -36,21 +47,17 @@ end
 local function checkRegisteredFiles()
 	local now = os.clock()
 	local timeSinceLastUpdate = now - lastUpdate
-	if timeSinceLastUpdate < 1 then
+	if timeSinceLastUpdate < 1 then -- only check every second
 		return
 	end
-	print("rml_autoreload widget:Update", timeSinceLastUpdate, "s")
 
 	for file, meta in pairs(registeredFiles) do
-		print("checking if changed", file)
 		local newContent = VFS.LoadFile(file)
 		if newContent ~= filesContent[file] then
-			print("reloading", file)
 			registeredFiles[file] = nil
 			filesContent[file] = nil
 			meta.widget.Shutdown()
 			meta.widget.Initialize()
-			print("reloaded", file)
 		end
 	end
 	lastUpdate = now
@@ -65,9 +72,7 @@ function widget:Update()
 end
 
 function widget:Initialize()
-	print("rml_autoreload widget:Initialize", lastUpdate)
-
 	--make interfaces available to other widgets:
-	WG['RmlAutoreload'] = {}
-	WG['RmlAutoreload'].register = register
+	WG['FileWatchAutoReloader'] = {}
+	WG['FileWatchAutoReloader'].register = register
 end

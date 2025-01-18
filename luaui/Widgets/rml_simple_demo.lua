@@ -42,10 +42,10 @@ function widget:Initialize()
 	document:ReloadStyleSheet()
 	document:Show()
 
-	if WG.RmlAutoreload then
-		WG.RmlAutoreload.register("luaui/Widgets/rml_widget_assets/simple_demo.rml", widget)
-		WG.RmlAutoreload.register("luaui/rml_common/styles.rcss", widget)
-		WG.RmlAutoreload.register("luaui/rml_common/flow_ui.rcss", widget)
+	if WG.FileWatchAutoReloader then
+		WG.FileWatchAutoReloader.register("luaui/Widgets/rml_widget_assets/simple_demo.rml", widget)
+		WG.FileWatchAutoReloader.register("luaui/rml_common/styles.rcss", widget)
+		WG.FileWatchAutoReloader.register("luaui/rml_common/flow_ui.rcss", widget)
 	end
 end
 

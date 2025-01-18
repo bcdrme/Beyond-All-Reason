@@ -17,7 +17,7 @@
         <div class="element">
             <span>Below me is a flexbox</span>
             <div style="display: flex">
-                <div style="background-color: blue; width: 150dp; height: 250dp">
+                <div style="background-color: rgb(130, 85, 40); width: 150dp; height: 250dp">
                     Solid Color Block test
                 </div>
                 <div
